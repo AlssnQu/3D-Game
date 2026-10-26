@@ -240,7 +240,7 @@ namespace LoQueCallaste.Editor
             string folder=Path.GetFullPath("../output/integracion-marco/previews");Directory.CreateDirectory(folder);
             var positions=new[]{new Vector3(0,1.65f,5.5f),new Vector3(7.5f,1.65f,13.1f),new Vector3(-3.6f,1.65f,23)};
             var targets=new[]{new Vector3(0,1.4f,22),new Vector3(10,1.16f,14),new Vector3(-8,1.4f,25)};
-            var names=new[]{"01-pasillo.png","02-telefono.png","03-aula.png"};
+            var names=new[]{"01-pasillo.png","02-bano.png","03-aula.png"};
             RenderTexture previous=RenderTexture.active;
             for(int i=0;i<positions.Length;i++)
             {
