@@ -28,9 +28,13 @@ namespace LoQueCallaste
             foreach(var zone in zones){hall|=zone.reverbPreset==AudioReverbPreset.Hallway;bath|=zone.reverbPreset==AudioReverbPreset.Bathroom;Check(zone.maxDistance>zone.minDistance,"Radios válidos: "+zone.name);}
             Check(hall && bath,"Presets distintos para pasillo y baño");
             var sources=FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
+            var sceneMix=FindFirstObjectByType<SchoolAudioDirector>();
+            Check(sceneMix && sceneMix.channels.Length==sources.Length,"Todas las fuentes del laboratorio tienen categoría de mezcla");
             Check(sources.Length>=3,"Emisores de ambiente y pasos presentes");
             foreach(var source in sources)
             {
+                if(source==sceneMix.transitionSource)
+                {Check(source.spatialBlend==0 && source.reverbZoneMix==0,"Motivo del recuerdo 2D separado del espacio físico");continue;}
                 Check(source.spatialBlend==1 && source.rolloffMode==AudioRolloffMode.Logarithmic,"Distancia y posición 3D: "+source.name);
                 Check(source.reverbZoneMix>0 && source.dopplerLevel==0,"Envío a reverb y Doppler: "+source.name);
                 if(source.loop)Check(source.clip && source.clip.channels==1 && source.isPlaying,"Ambiente mono reproduciéndose: "+source.name);
@@ -46,7 +50,7 @@ namespace LoQueCallaste
             yield return new WaitForSecondsRealtime(.15f);
             Check(AudioSettings.dspTime>dsp,"El reloj de audio avanza en modo Play");
             var emitters=FindObjectsByType<SpatialSoundEmitter>(FindObjectsSortMode.None);
-            Check(emitters.Length==4,"Cuatro texturas localizadas de casillero, aula y baño");
+            Check(emitters.Length==5,"Cinco texturas localizadas, incluidos murmullos abstractos");
             foreach(var emitter in emitters)
             {
                 Check(emitter.clips.Length>0 && Array.TrueForAll(emitter.clips,c=>c && c.channels==1),"Paleta licenciada mono asignada: "+emitter.name);
@@ -54,7 +58,8 @@ namespace LoQueCallaste
             }
             var testEmitter=new GameObject("Emisor de revisión").AddComponent<SpatialSoundEmitter>();
             testEmitter.automatic=false;testEmitter.listener=walker.view.transform;testEmitter.transform.position=walker.view.transform.position+Vector3.right;
-            testEmitter.clips=new[]{emitters[0].clips[0],emitters[0].clips[1]};
+            var variedEmitter=Array.Find(emitters,e=>e.clips.Length>1);
+            testEmitter.clips=new[]{variedEmitter.clips[0],variedEmitter.clips[1]};
             var testSource=testEmitter.GetComponent<AudioSource>();PositionalAudio.Configure(testSource);
             Check(testEmitter.TryPlay() && testSource.isPlaying,"Reproducción manual desde el emisor espacial");
             var firstClip=testSource.clip;
@@ -87,6 +92,45 @@ namespace LoQueCallaste
             Check(filter.cutoffFrequency==22000,"Desactivar oclusión restaura el filtro original");
             profile.minDistance=float.NaN;profile.maxDistance=float.PositiveInfinity;profile.volume=float.NaN;profile.Apply(probe);
             Check(probe.minDistance>0 && probe.maxDistance>probe.minDistance && probe.volume==0,"Los perfiles rechazan parámetros no finitos");
+            var feet=walker.surfaceFootsteps;
+            Check(feet && feet.woodClips.Length==4 && Array.TrueForAll(feet.woodClips,c=>c && c.channels==1),"Paletas diferenciadas para baldosa y madera");
+            Check(!feet.Advance(.5f,false,SchoolSurface.Tile),"No hay pasos al estar en el aire");
+            Check(!feet.Advance(0,true,SchoolSurface.Tile),"No hay pasos sin desplazamiento real");
+            Check(feet.PlayStep(SchoolSurface.Tile) && feet.GetComponent<AudioSource>().isPlaying,"Paso de baldosa reproducido");
+            var tile=feet.GetComponent<AudioSource>().clip;
+            Check(feet.PlayStep(SchoolSurface.Wood) && feet.GetComponent<AudioSource>().clip!=tile && feet.LastSurface==SchoolSurface.Wood,"Cambio de superficie cambia la grabación");
+            var woodClip=feet.GetComponent<AudioSource>().clip;feet.PlayStep(SchoolSurface.Wood);
+            Check(feet.GetComponent<AudioSource>().clip!=woodClip,"Los pasos de madera no repiten muestra inmediata");
+            Check(walker.switchAudio && walker.switchAudio.PlayState(false),"Apagar linterna reproduce el interruptor grabado");
+            Check(!walker.switchAudio.PlayState(false),"Un estado repetido no duplica el clic");
+            Check(walker.switchAudio.PlayState(true),"Encender linterna usa su grabación correspondiente");
+
+            var mixObject=new GameObject("Revisión de mezcla");var mix=mixObject.AddComponent<SchoolAudioDirector>();mix.transitionSeconds=.1f;
+            var ambience=new GameObject("Bus ambiente").AddComponent<AudioSource>();
+            var effect=new GameObject("Bus efectos").AddComponent<AudioSource>();
+            var dialogue=new GameObject("Bus voz").AddComponent<AudioSource>();
+            mix.channels=new[]{new SchoolAudioDirector.Channel{source=ambience,bus=SchoolAudioDirector.Bus.Ambience,authoredVolume=.4f},new SchoolAudioDirector.Channel{source=effect,bus=SchoolAudioDirector.Bus.Effects,authoredVolume=.8f},new SchoolAudioDirector.Channel{source=dialogue,bus=SchoolAudioDirector.Bus.Dialogue,authoredVolume=.5f}};
+            mix.textures=new[]{testEmitter};testEmitter.SetSuppressed(false);
+            mix.SetMaster(.5f);
+            Check(Mathf.Approximately(ambience.volume,.2f) && Mathf.Approximately(dialogue.volume,.25f),"Volumen general proporcional por categorías");
+            mix.SetEffects(.25f);
+            Check(Mathf.Approximately(effect.volume,.1f) && Mathf.Approximately(dialogue.volume,.25f),"Efectos independientes de las voces");
+            mix.SetReducedImpact(true);
+            Check(Mathf.Approximately(effect.volume,.06f),"Modo de impactos suaves reduce efectos");
+            mix.BeginCinematic();mix.BeginCinematic();
+            Check(testEmitter.Suppressed,"Inicio de recuerdo suprime texturas sin doble captura de estado");
+            yield return new WaitForSecondsRealtime(.2f);
+            Check(ambience.volume<.05f && Mathf.Approximately(dialogue.volume,.25f),"El fundido deja espacio a la voz del recuerdo");
+            mix.EndCinematic();
+            Check(!testEmitter.Suppressed,"Al terminar se restaura el estado anterior de la textura");
+            yield return new WaitForSecondsRealtime(.2f);
+            Check(Mathf.Approximately(ambience.volume,.2f),"El ambiente vuelve gradualmente a su nivel anterior");
+            testEmitter.SetSuppressed(true);mix.BeginCinematic();mix.EndCinematic();
+            Check(testEmitter.Suppressed,"Se conserva una textura que ya estaba suprimida");
+            mix.SetMaster(float.NaN);Check(effect.volume==0 && ambience.volume==0 && dialogue.volume==0,"Ganancia inválida produce silencio controlado");
+            mix.enabled=false;
+            Check(Mathf.Approximately(ambience.volume,.4f) && Mathf.Approximately(effect.volume,.8f),"Desactivar el director restaura ganancias de autoría");
+            Destroy(mixObject);Destroy(ambience.gameObject);Destroy(effect.gameObject);Destroy(dialogue.gameObject);
             Destroy(testEmitter.gameObject);Destroy(acousticSource);Destroy(target);Destroy(blocker);
             Destroy(probe.gameObject);Destroy(profile);Destroy(zoneProbe.gameObject);
         }

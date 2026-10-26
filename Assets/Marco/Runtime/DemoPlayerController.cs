@@ -10,12 +10,13 @@ namespace LoQueCallaste
         public Light flashlight;
         public AudioSource footsteps;
         public AudioClip[] stepClips;
+        public SurfaceFootsteps surfaceFootsteps;
+        public FlashlightSwitchAudio switchAudio;
         public float walkSpeed = 2.5f;
         public float sensitivity = 1.8f;
         public string InteractionHint { get; private set; }
         private CharacterController controller;
-        private float pitch, verticalSpeed, stepClock;
-        private int lastStep = -1;
+        private float pitch, verticalSpeed;
         private bool focused = true;
 
         private void Awake() { controller = GetComponent<CharacterController>(); }
@@ -42,19 +43,18 @@ namespace LoQueCallaste
             Vector3 direction = Vector3.ClampMagnitude(transform.right * x + transform.forward * z, 1);
             if (controller.isGrounded && verticalSpeed < 0) verticalSpeed = -2;
             verticalSpeed += Physics.gravity.y * Time.deltaTime;
+            Vector3 before=transform.position;
             controller.Move((direction * walkSpeed + Vector3.up * verticalSpeed) * Time.deltaTime);
-            if (direction.sqrMagnitude > 0.01f && controller.isGrounded)
+            Vector3 movement=transform.position-before;movement.y=0;
+            if (surfaceFootsteps)
             {
-                stepClock -= Time.deltaTime;
-                if (stepClock <= 0 && footsteps && stepClips != null && stepClips.Length > 0)
-                {
-                    lastStep = lastStep >= 0 && stepClips.Length > 1 ? (lastStep + Random.Range(1, stepClips.Length)) % stepClips.Length : Random.Range(0, stepClips.Length);
-                    footsteps.pitch = Random.Range(.97f, 1.03f);
-                    if (stepClips[lastStep]) footsteps.PlayOneShot(stepClips[lastStep], 0.45f);
-                    stepClock = 0.47f;
-                }
+                SchoolSurface surface=SchoolSurface.Tile;
+                if(Physics.Raycast(transform.position+Vector3.up*.2f,Vector3.down,out var floorHit,1f,~0,QueryTriggerInteraction.Ignore))
+                { var marker=floorHit.collider.GetComponentInParent<FootstepSurface>();if(marker)surface=marker.surface; }
+                surfaceFootsteps.Advance(movement.magnitude,controller.isGrounded,surface);
             }
-            if (keyboard.fKey.wasPressedThisFrame && flashlight) flashlight.enabled = !flashlight.enabled;
+            if (keyboard.fKey.wasPressedThisFrame && flashlight)
+            { flashlight.enabled = !flashlight.enabled;if(switchAudio)switchAudio.OnStateChanged(flashlight.enabled); }
             InteractionHint = "";
             if (Physics.Raycast(view.transform.position, view.transform.forward, out RaycastHit hit, 2.5f, ~0, QueryTriggerInteraction.Ignore))
             {

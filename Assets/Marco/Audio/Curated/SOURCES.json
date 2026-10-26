@@ -222,5 +222,123 @@
     "channels": 1,
     "duration": 0.2358,
     "peak": 0.411987
+  },
+  {
+    "file": "kenney_footstep_wood_000.wav",
+    "author": "Kenney",
+    "source": "https://kenney.nl/assets/impact-sounds",
+    "source_file": "Audio/footstep_wood_000.ogg",
+    "license": "CC0-1.0",
+    "changes": "OGG decoded by Unity; mono PCM 48kHz WAV, DC removal, 8ms edge fades, peak 0.55",
+    "sha256": "04df225fd21faef9a04434b958b7aa793d6c70024496a8a98373fb46966bc560",
+    "source_sha256": "5f1c252942a220d658121bd9417448cd19649ded9fff2ff15f6e50899373ce8e",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 0.2496,
+    "peak": 0.191956
+  },
+  {
+    "file": "kenney_footstep_wood_001.wav",
+    "author": "Kenney",
+    "source": "https://kenney.nl/assets/impact-sounds",
+    "source_file": "Audio/footstep_wood_001.ogg",
+    "license": "CC0-1.0",
+    "changes": "OGG decoded by Unity; mono PCM 48kHz WAV, DC removal, 8ms edge fades, peak 0.55",
+    "sha256": "79efb01a85e3d8f852c88489b90000fd501940d25dc8e9273107d217ac87074e",
+    "source_sha256": "e4f68e1c9fd55b4dc8ca89ed2bbab6f200171bc54bdc18aa96b80d8e7336f462",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 0.2516,
+    "peak": 0.25116
+  },
+  {
+    "file": "kenney_footstep_wood_002.wav",
+    "author": "Kenney",
+    "source": "https://kenney.nl/assets/impact-sounds",
+    "source_file": "Audio/footstep_wood_002.ogg",
+    "license": "CC0-1.0",
+    "changes": "OGG decoded by Unity; mono PCM 48kHz WAV, DC removal, 8ms edge fades, peak 0.55",
+    "sha256": "6f7c48a4b99866d6ab71fa8f5c897d4028af05694dd12135de8198198d536d33",
+    "source_sha256": "9ff095b05cee5eec40b081defe3f0eef7232bb16d4865ce03b9f6dbab875cfdd",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 0.2514,
+    "peak": 0.308594
+  },
+  {
+    "file": "kenney_footstep_wood_003.wav",
+    "author": "Kenney",
+    "source": "https://kenney.nl/assets/impact-sounds",
+    "source_file": "Audio/footstep_wood_003.ogg",
+    "license": "CC0-1.0",
+    "changes": "OGG decoded by Unity; mono PCM 48kHz WAV, DC removal, 8ms edge fades, peak 0.55",
+    "sha256": "1f2ea031becea300c3c8a97bc65dd1788b54750995d59293f3d95d6619e61914",
+    "source_sha256": "2a68a083daa9eda08fed0ea5da5280dfbe0de226196c576be02f95259dd139d9",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 0.2515,
+    "peak": 0.17392
+  },
+  {
+    "file": "sardin_whisper_texture_01.wav",
+    "author": "Joseph SARDIN & Axeline T.",
+    "source": "https://bigsoundbank.com/whisper-2-s3256.html",
+    "source_file": "Whisper #2 / 3256.wav",
+    "license": "CC0-1.0",
+    "changes": "4s selection; shuffled/reversed 120ms grains, band limiting, fades, peak 0.5. Nonverbal design texture, not final dialogue.",
+    "sha256": "6930408b91cd63cfb936e989145cf57f2e97fbf950879d85e07825d225194fcf",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 3.96,
+    "source_sha256": "8740184cbfebdf722ac20dc1706d634948ae75bfed3568473149a7bd27d2d215",
+    "peak": 0.499969
+  },
+  {
+    "file": "sardin_whisper_texture_02.wav",
+    "author": "Joseph SARDIN & Axeline T.",
+    "source": "https://bigsoundbank.com/whisper-2-s3256.html",
+    "source_file": "Whisper #2 / 3256.wav",
+    "license": "CC0-1.0",
+    "changes": "4s selection; shuffled/reversed 120ms grains, band limiting, fades, peak 0.5. Nonverbal design texture, not final dialogue.",
+    "sha256": "f61bb62985f4ff9bf2a27d022a090ef63f5e5902ef7b2d33a5bc042571d3a7de",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 3.96,
+    "source_sha256": "8740184cbfebdf722ac20dc1706d634948ae75bfed3568473149a7bd27d2d215",
+    "peak": 0.499969
+  },
+  {
+    "file": "design_memory_in.wav",
+    "author": "Marco Fuentes; source foley by laleksic",
+    "source": "https://opengameart.org/node/143670",
+    "source_file": "floor_creak3.wav + clang_metal.wav; own 64/97Hz synthesis",
+    "license": "CC0-1.0",
+    "changes": "Layering, resampling, reversal for entrance, shaped envelope and peak 0.5; original sound-design motif.",
+    "sha256": "6ffbac945ebf4347c73e80985680d6e3493ccff0dfe40ef6392eebad9d65c368",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 3.2,
+    "derived_from": [
+      "laleksic_floor_creak3.wav",
+      "laleksic_clang_metal.wav"
+    ],
+    "peak": 0.499969
+  },
+  {
+    "file": "design_memory_out.wav",
+    "author": "Marco Fuentes; source foley by laleksic",
+    "source": "https://opengameart.org/node/143670",
+    "source_file": "floor_creak3.wav + clang_metal.wav; own 64/97Hz synthesis",
+    "license": "CC0-1.0",
+    "changes": "Layering, resampling, reversal for entrance, shaped envelope and peak 0.5; original sound-design motif.",
+    "sha256": "ef3824c9e7eb03d145b4a17b0fef99d8204ae099767e57d1a93bf15115a1750f",
+    "sample_rate": 48000,
+    "channels": 1,
+    "duration": 3.2,
+    "derived_from": [
+      "laleksic_floor_creak3.wav",
+      "laleksic_clang_metal.wav"
+    ],
+    "peak": 0.499969
   }
 ]

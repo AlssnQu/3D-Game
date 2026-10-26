@@ -59,9 +59,17 @@ namespace LoQueCallaste.Editor
             TextureEmitter("Aula · madera bajo tensión",new Vector3(-7.5f,.9f,24),new[]{"laleksic_floor_creak1","laleksic_floor_creak2","laleksic_floor_creak3"},.34f,16,new Vector2(12,23));
             TextureEmitter("Baño · bisagra de cabina",new Vector3(6.5f,1.2f,16.8f),new[]{"laleksic_door_creak_open","laleksic_door_creak_close"},.32f,12,new Vector2(14,25));
             TextureEmitter("Baño · tubería",new Vector3(12.5f,1.1f,11.5f),new[]{"laleksic_tap_water"},.15f,10,new Vector2(9,16));
+            TextureEmitter("Murmullo · aula lejana",new Vector3(-10,1.7f,26),new[]{"sardin_whisper_texture_01","sardin_whisper_texture_02"},.22f,13,new Vector2(22,34));
             Reverb("Reverb · Pasillo",new Vector3(0,1.6f,20),AudioReverbPreset.Hallway,3,7);
             Reverb("Reverb · Baño",new Vector3(10,1.6f,14),AudioReverbPreset.Bathroom,2,5.5f);
             SpatialAudioSetup.CreateAssets();
+            var transition=Source("Motivo del recuerdo",Vector3.zero,null,.28f,false,.5f,8);transition.spatialBlend=0;transition.reverbZoneMix=0;transition.priority=80;
+            var director=new GameObject("Mezcla del colegio").AddComponent<SchoolAudioDirector>();
+            director.transitionSource=transition;director.memoryIn=CuratedClip("design_memory_in");director.memoryOut=CuratedClip("design_memory_out");
+            director.textures=Object.FindObjectsByType<SpatialSoundEmitter>(FindObjectsSortMode.None);
+            director.channels=Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None).Select(source=>new SchoolAudioDirector.Channel
+            {source=source,bus=source.loop?SchoolAudioDirector.Bus.Ambience:SchoolAudioDirector.Bus.Effects,authoredVolume=source.volume}).ToArray();
+            var review=director.gameObject.AddComponent<AudioReviewControls>();review.director=director;review.walker=player;
             EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene(),ScenePath);
             AssetDatabase.SaveAssets();
             Debug.Log("MARCO_SCENE_BUILT: "+ScenePath);
@@ -178,7 +186,7 @@ namespace LoQueCallaste.Editor
         }
         private static void Classroom()
         {
-            Box("Suelo aula",new Vector3(-7.7f,-.12f,24),new Vector3(10,.24f,10),floor);
+            Box("Suelo aula",new Vector3(-7.7f,-.12f,24),new Vector3(10,.24f,10),wood).AddComponent<FootstepSurface>().surface=SchoolSurface.Wood;
             Wall("Aula fondo",new Vector3(-12.7f,1.7f,24),new Vector3(.3f,3.4f,10));
             Wall("Aula norte",new Vector3(-7.7f,1.7f,29),new Vector3(10,3.4f,.3f));
             Wall("Aula sur",new Vector3(-7.7f,1.7f,19),new Vector3(10,3.4f,.3f));
@@ -205,6 +213,12 @@ namespace LoQueCallaste.Editor
             var camera=cameraObj.AddComponent<Camera>();camera.nearClipPlane=.06f;camera.farClipPlane=70;camera.fieldOfView=72;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=RenderSettings.fogColor;cameraObj.AddComponent<AudioListener>();controller.view=camera;
             var light=new GameObject("Linterna").AddComponent<Light>();light.transform.SetParent(cameraObj.transform,false);light.transform.localPosition=new Vector3(.18f,-.15f,.14f);light.type=LightType.Spot;light.spotAngle=61;light.innerSpotAngle=32;light.range=23;light.intensity=3.2f;light.color=new Color(1f,.89f,.69f);light.shadows=LightShadows.Soft;controller.flashlight=light;
             var step=new GameObject("Pasos").AddComponent<AudioSource>();step.transform.SetParent(obj.transform,false);step.transform.localPosition=new Vector3(0,.2f,0);PositionalAudio.Configure(step,.5f,8);controller.footsteps=step;controller.stepClips=Enumerable.Range(0,4).Select(i=>CuratedClip("kenney_footstep_concrete_"+i.ToString("000"))).ToArray();
+            step.volume=.32f;step.priority=96;
+            var footsteps=step.gameObject.AddComponent<SurfaceFootsteps>();footsteps.tileClips=controller.stepClips;
+            footsteps.woodClips=Enumerable.Range(0,4).Select(i=>CuratedClip("kenney_footstep_wood_"+i.ToString("000"))).ToArray();controller.surfaceFootsteps=footsteps;
+            var click=new GameObject("Interruptor de linterna").AddComponent<AudioSource>();click.transform.SetParent(cameraObj.transform,false);
+            PositionalAudio.Configure(click,.4f,3);click.reverbZoneMix=.2f;click.volume=.2f;click.priority=96;
+            var switchAudio=click.gameObject.AddComponent<FlashlightSwitchAudio>();switchAudio.switchOn=CuratedClip("laleksic_switch_on");switchAudio.switchOff=CuratedClip("laleksic_switch_off");controller.switchAudio=switchAudio;
             return controller;
         }
         private static AudioClip Clip(string name) { return AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Marco/Audio/"+name+".wav"); }

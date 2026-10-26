@@ -45,8 +45,13 @@ namespace LoQueCallaste.Editor
             var zones=UnityEngine.Object.FindObjectsByType<AudioReverbZone>(FindObjectsSortMode.None);
             if(listeners.Length!=1 || zones.Length!=2)throw new Exception("El laboratorio necesita un oyente y dos reverberaciones.");
             foreach(var source in UnityEngine.Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None))
+            {
+                var director=UnityEngine.Object.FindFirstObjectByType<SchoolAudioDirector>();
+                if(director && source==director.transitionSource)
+                {if(source.spatialBlend!=0)throw new Exception("La transición del recuerdo debe ser subjetiva 2D.");continue;}
                 if(source.spatialBlend!=1 || source.reverbZoneMix<=0 || source.minDistance<=0 || source.maxDistance<=source.minDistance)
                     throw new Exception("Fuente 3D mal configurada: "+source.name);
+            }
             var profile=AssetDatabase.LoadAssetAtPath<SpatialAudioProfile>("Assets/Marco/Profiles/Efectos espaciales.asset");
             var probe=new GameObject("Audio verification").AddComponent<AudioSource>();
             profile.Apply(probe);

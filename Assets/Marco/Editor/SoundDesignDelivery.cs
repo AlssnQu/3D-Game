@@ -9,6 +9,7 @@ namespace LoQueCallaste.Editor
     public static class SoundDesignDelivery
     {
         private const int Rate=48000;
+        private const int PreviewSeconds=36;
         [Serializable] private class ClipInfo { public string file; public float seconds; public int channels; public int sampleRate; public float peak; }
         [Serializable] private class PaletteReport { public ClipInfo[] clips; public float previewPeak; public string note; }
         public static void Deliver()
@@ -24,6 +25,9 @@ namespace LoQueCallaste.Editor
             // The downloaded archive remains intact outside Assets. Keep only edited mono WAVs in the game.
             foreach(string path in Directory.GetFiles("Assets/Marco/Audio/Curated","kenney_*.ogg"))
             {
+                var importer=(AudioImporter)AssetImporter.GetAtPath(path);importer.forceToMono=true;
+                var settings=importer.defaultSampleSettings;settings.loadType=AudioClipLoadType.DecompressOnLoad;settings.compressionFormat=AudioCompressionFormat.PCM;
+                settings.sampleRateSetting=AudioSampleRateSetting.OverrideSampleRate;settings.sampleRateOverride=Rate;importer.defaultSampleSettings=settings;importer.SaveAndReimport();
                 var clip=AssetDatabase.LoadAssetAtPath<AudioClip>(path);var data=Read(clip);
                 if(clip.channels!=1 || clip.frequency!=Rate)throw new Exception("Importar primero como mono PCM 48kHz: "+path);
                 double total=0;foreach(float value in data)total+=value;
@@ -57,14 +61,24 @@ namespace LoQueCallaste.Editor
                 if(clip.channels!=1 || clip.frequency!=Rate || peak>=.9999f)throw new Exception("Revisar formato o clipping: "+path+" peak="+peak);
                 infos.Add(new ClipInfo{file=path,seconds=clip.length,channels=clip.channels,sampleRate=clip.frequency,peak=peak});
             }
-            var mix=new float[Rate*24*2];
+            var mix=new float[Rate*PreviewSeconds*2];
             var hum=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Marco/Audio/amb_corridor_procedural.wav");
-            for(int i=0;i<2;i++)Add(mix,hum,i*12,.13f,0);
-            for(int i=0;i<6;i++)Add(mix,DemoSceneBuilder.CuratedClip("kenney_footstep_concrete_"+(i%4).ToString("000")),1.5f+i*.6f,.38f,0);
-            Add(mix,DemoSceneBuilder.CuratedClip("kenney_impactMetal_light_001"),6,.3f,.8f);
-            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_floor_creak2"),9.5f,.42f,-.65f);
-            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_tap_water"),13,.2f,.55f);
-            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_door_creak_open"),18,.4f,-.3f);
+            for(int i=0;i<3;i++)Add(mix,hum,i*12,.14f,0);
+            for(int i=0;i<5;i++)Add(mix,DemoSceneBuilder.CuratedClip("kenney_footstep_concrete_"+(i%4).ToString("000")),1.5f+i*.55f,.44f,0);
+            Add(mix,DemoSceneBuilder.CuratedClip("kenney_impactMetal_light_001"),6,.4f,.8f);
+            Add(mix,DemoSceneBuilder.CuratedClip("sardin_whisper_texture_01"),9,.23f,-.8f);
+            for(int i=0;i<4;i++)Add(mix,DemoSceneBuilder.CuratedClip("kenney_footstep_wood_"+i.ToString("000")),14+i*.6f,.4f,0);
+            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_floor_creak2"),18,.46f,-.65f);
+            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_tap_water"),22,.26f,.55f);
+            Add(mix,DemoSceneBuilder.CuratedClip("laleksic_door_creak_open"),25,.4f,-.3f);
+            // The authored pause illustrates a shift in attention toward a memory.
+            for(int i=Rate*27;i<Rate*34;i++)
+            {
+                float blend=Mathf.Min(Mathf.Clamp01((i/(float)Rate-27)/.8f),Mathf.Clamp01((34-i/(float)Rate)/.8f));
+                float ambienceDuck=Mathf.Lerp(1,.12f,blend);mix[i*2]*=ambienceDuck;mix[i*2+1]*=ambienceDuck;
+            }
+            Add(mix,DemoSceneBuilder.CuratedClip("design_memory_in"),27.2f,.5f,0);
+            Add(mix,DemoSceneBuilder.CuratedClip("design_memory_out"),31.8f,.42f,0);
             float maximum=0;foreach(float value in mix)maximum=Mathf.Max(maximum,Mathf.Abs(value));
             // Preserve headroom; never boost a quiet mix just to reach a target peak.
             float gain=maximum>.7f?.7f/maximum:1;
@@ -78,7 +92,7 @@ namespace LoQueCallaste.Editor
                 for(int i=0;i<mix.Length;i++)
                 {
                     float time=(i/2)/(float)Rate;
-                    float fade=Mathf.Min(Mathf.Clamp01(time/.5f),Mathf.Clamp01((24-time)/1.5f));
+                    float fade=Mathf.Min(Mathf.Clamp01(time/.5f),Mathf.Clamp01((PreviewSeconds-time)/1.5f));
                     writer.Write((short)(Mathf.Clamp(mix[i]*gain*fade,-1,1)*32767));
                 }
             }
