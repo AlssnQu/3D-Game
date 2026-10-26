@@ -47,7 +47,8 @@ namespace LoQueCallaste.Hud.Editor
             Image("Cuerpo batería",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,0),new Vector2(30,42),White);
             Image("Interior batería",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,0),new Vector2(24,36),new Color(.025f,.04f,.05f));
             Image("Terminal",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,24),new Vector2(12,5),White);
-            var fill=Image("Carga",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,0),new Vector2(18,30),White);fill.type=UnityEngine.UI.Image.Type.Filled;fill.fillMethod=UnityEngine.UI.Image.FillMethod.Vertical;fill.fillOrigin=0;fill.fillAmount=0;
+            var fill=Image("Carga",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,-15),new Vector2(18,30),White);
+            fill.rectTransform.pivot=new Vector2(.5f,0);fill.fillAmount=0;
             var label=Label("Porcentaje",panel.transform,new Vector2(.5f,.5f),new Vector2(26,0),new Vector2(220,42),"BATERÍA  —",22);
             root.GetComponent<FlashlightHud>().Configure(fill,label,group);
             PrefabUtility.SaveAsPrefabAsset(root,PrefabPath);Object.DestroyImmediate(root);AssetDatabase.SaveAssets();
@@ -93,6 +94,40 @@ namespace LoQueCallaste.Hud.Editor
             string folder=Path.GetFullPath("../output/integracion-marco/verification");Directory.CreateDirectory(folder);
             File.WriteAllText(Path.Combine(folder,"issue-11.txt"),"PASS · Unity "+Application.unityVersion+" · "+checks+" comprobaciones de HUD\n");
             Debug.Log("MARCO_ISSUE11_PASS: "+checks);
+        }
+
+        public static void Deliver()
+        {
+            CreateReviewScene();
+            string folder=Path.GetFullPath("../output/integracion-marco");
+            Directory.CreateDirectory(Path.Combine(folder,"previews"));
+            var hud=Object.FindFirstObjectByType<FlashlightHud>();
+            var canvas=hud.GetComponent<Canvas>();var camera=Camera.main;
+            var rt=new RenderTexture(1600,900,24);
+            var previous=RenderTexture.active;
+            try
+            {
+                camera.targetTexture=rt;canvas.renderMode=RenderMode.ScreenSpaceCamera;
+                canvas.worldCamera=camera;canvas.planeDistance=1;
+                foreach(int charge in new[]{100,50,15,0})
+                {
+                    hud.SetChargePercent(charge);Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;
+                    var image=new Texture2D(1600,900,TextureFormat.RGB24,false);
+                    image.ReadPixels(new UnityEngine.Rect(0,0,1600,900),0,0);image.Apply();
+                    File.WriteAllBytes(Path.Combine(folder,"previews","hud-"+charge+".png"),image.EncodeToPNG());
+                    Object.DestroyImmediate(image);
+                }
+            }
+            finally
+            {
+                camera.targetTexture=null;RenderTexture.active=previous;Object.DestroyImmediate(rt);
+                canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.worldCamera=null;hud.UnbindBattery();
+            }
+            AssetDatabase.ExportPackage("Assets/MarcoHUD",Path.Combine(folder,"Marco-HUD.unitypackage"),ExportPackageOptions.Recurse);
+            string path=Path.Combine(folder,"HUD-Windows","LoQueCallaste-HUD.exe");Directory.CreateDirectory(Path.GetDirectoryName(path));
+            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{ScenePath},locationPathName=path,target=BuildTarget.StandaloneWindows64,options=BuildOptions.Development});
+            if(report.summary.result!=UnityEditor.Build.Reporting.BuildResult.Succeeded)throw new Exception("Build HUD fallido: "+report.summary.result);
+            Debug.Log("MARCO_HUD_DELIVERY_OK");
         }
     }
 }

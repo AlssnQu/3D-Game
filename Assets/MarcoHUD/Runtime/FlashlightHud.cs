@@ -68,6 +68,9 @@ namespace LoQueCallaste.Hud
             if (chargeFill)
             {
                 chargeFill.fillAmount = hasReading ? DisplayedCharge01 : 0;
+                // A plain UI Image has no sprite, so its mesh ignores fillAmount.
+                // The bottom-pivoted rectangle provides a proportional visible fill.
+                chargeFill.rectTransform.localScale = new Vector3(1, hasReading ? DisplayedCharge01 : 0, 1);
                 chargeFill.color = DisplayedCharge01 <= 0.2f ? lowColor : normalColor;
             }
             if (percentageText)
