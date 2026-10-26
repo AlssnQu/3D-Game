@@ -14,7 +14,7 @@ namespace LoQueCallaste
         public bool automatic = true;
         public bool Suppressed { get; private set; }
         private AudioSource source;
-        private int previous = -1;
+        private AudioClip previous;
         private float nextAt;
         private static float globalNextAt;
 
@@ -42,11 +42,17 @@ namespace LoQueCallaste
             ResolveListener();
             if (!isActiveAndEnabled || Suppressed || Time.timeScale <= 0 || !source || source.isPlaying || !listener || Time.time < globalNextAt || clips == null || clips.Length == 0) return false;
             if (Vector3.Distance(transform.position, listener.position) > Mathf.Max(1, audibleRadius)) return false;
-            int index = previous >= 0 && clips.Length > 1 ? (previous + Random.Range(1, clips.Length)) % clips.Length : Random.Range(0, clips.Length);
-            for (int i = 0; i < clips.Length && !clips[index]; i++) index = (index + 1) % clips.Length;
-            if (!clips[index]) return false;
-            previous = index;
-            source.clip = clips[index]; source.loop = false;
+            int available = 0;
+            foreach(var clip in clips)if(clip && clip!=previous)available++;
+            bool allowPrevious=available==0;
+            if(allowPrevious)foreach(var clip in clips)if(clip)available++;
+            if(available==0)return false;
+            int choice=Random.Range(0,available);AudioClip selected=null;
+            foreach(var clip in clips)
+                if(clip && (allowPrevious || clip!=previous) && choice--==0){selected=clip;break;}
+            if(!selected)return false;
+            previous = selected;
+            source.clip = selected; source.loop = false;
             source.pitch = Random.Range(Mathf.Clamp(pitchRange.x, .5f, 2), Mathf.Clamp(Mathf.Max(pitchRange.x, pitchRange.y), .5f, 2));
             source.Play(); globalNextAt = Time.time + 2;
             return true;

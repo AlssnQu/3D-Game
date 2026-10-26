@@ -2,6 +2,8 @@
 
 Base: Unity 6000.3.23f1, URP 17.3 e Input System 1.20 del equipo. La escena original `Assets/Scenes/SampleScene.unity` y la configuración del proyecto se conservan.
 
+**Estado: prototipo validado en laboratorio; integración al colegio pendiente.** Los espacios de prueba no son las zonas definitivas del colegio. Las pruebas verifican componentes y comportamiento técnico, no la mezcla ni la arquitectura del mapa final.
+
 ## Tarea #17: audio espacial y reverberación
 
 Escena de comprobación: `Assets/Marco/Scenes/AudioCinematicsLab.unity`.
@@ -35,3 +37,5 @@ Consultar DISENO_SONORO.md para la intención narrativa, paleta por espacio, pru
 `SoundDesignDelivery.Deliver` regenera el laboratorio, valida las muestras mono a 48 kHz, produce una maqueta estéreo de 36 segundos, exporta el paquete y compila Windows. La maqueta es ilustrativa: no graba el resultado 3D del motor. Los efectos incidentales no reemplazan los triggers narrativos ni el controlador de la criatura de otras tareas.
 
 SchoolAudioDirector ofrece volumen general/ambiente/efectos/voces, impactos suaves y mezcla de recuerdo mediante BeginCinematic/EndCinematic. SurfaceFootsteps expone pasos por superficie y FlashlightSwitchAudio confirma cambios de linterna sin sustituir su lógica. Los puntos de enlace y los límites de la mezcla están en DISENO_SONORO.md.
+
+La selección de texturas compara la grabación anterior por referencia: evita repetirla aunque aparezca duplicada en la paleta y omite entradas sin asignar. Si solo queda una grabación válida, permite reutilizarla como alternativa controlada.

@@ -72,7 +72,9 @@ namespace LoQueCallaste
             testEmitter.transform.position=walker.view.transform.position+Vector3.right*100;
             Check(!testEmitter.TryPlay(),"No reproduce fuera del radio audible");
             testEmitter.transform.position=walker.view.transform.position+Vector3.right;
-            Check(testEmitter.TryPlay() && testSource.clip!=firstClip,"Evita repetición inmediata de la muestra");
+            var alternative=Array.Find(testEmitter.clips,c=>c!=firstClip);
+            testEmitter.clips=new[]{firstClip,null,firstClip,alternative};
+            Check(testEmitter.TryPlay() && testSource.clip!=firstClip,"Evita repetición incluso con referencias nulas y muestras duplicadas");
             testEmitter.SetSuppressed(true);
 
             var acousticSource=new GameObject("Prueba de oclusión",typeof(AudioSource));acousticSource.transform.position=new Vector3(100,3,100);
