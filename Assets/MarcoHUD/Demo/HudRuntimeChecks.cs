@@ -35,9 +35,15 @@ namespace LoQueCallaste.Hud
             Check(Mathf.Abs(fill.rectTransform.localScale.y-.5f)<.001f && fill.rectTransform.pivot.y==0,"Altura visible proporcional al 50% desde la base");
             battery.SetCharge01(.15f);yield return null;yield return null;
             Check(hud.PercentageLabel.Contains("15%") && fill.color.r>fill.color.g && Mathf.Abs(fill.rectTransform.localScale.y-.15f)<.001f,"Aviso rojo y altura visible de batería baja");
+            Check(hud.StatusLabel=="BATERÍA BAJA","La batería baja se comunica con texto además del color");
             hud.SetVisible(false);battery.SetCharge01(0);yield return null;yield return null;
             Check(!hud.IsVisible && hud.PercentageLabel.Contains("0%") && fill.rectTransform.localScale.y==0,"La batería sigue actualizándose con HUD oculto");
+            Check(hud.StatusLabel=="BATERÍA AGOTADA","La batería vacía tiene un estado textual inequívoco");
             hud.SetVisible(true);Check(hud.IsVisible,"Visibilidad restaurada");
+            Check(!hud.BindBattery(hud.GetComponentInChildren<HudSafeArea>()) && !hud.HasReading,"Una fuente incompatible desconecta la lectura anterior");
+            battery.SetCharge01(.5f);yield return null;yield return null;
+            Check(!hud.HasReading && hud.PercentageLabel.Contains("—") && hud.StatusLabel=="","La fuente anterior no reaparece tras rechazar otra fuente");
+            Check(hud.BindBattery(battery),"Se puede reconectar una fuente válida después del rechazo");
             Destroy(battery.gameObject);yield return null;yield return null;
             Check(!hud.HasReading && hud.PercentageLabel.Contains("—"),"Fuente destruida se desconecta sin mostrar datos antiguos");
             hud.SetChargePercent(87);Check(hud.PercentageLabel.Contains("87%"),"Admite un evento externo de porcentaje");

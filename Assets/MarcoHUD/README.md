@@ -16,6 +16,8 @@ Abre `Scenes/HudReview.unity` y pulsa Play. Teclas: 1 = 100%, 2 = 50%, 3 = 15%, 
 
 El HUD de producción no muestra instrucciones de prueba: estos textos solo se añaden en la escena HudReview. La retícula permanece en el centro de la vista, mientras el indicador de batería usa el área segura. CanvasScaler utiliza una referencia de 1920×1080.
 
+El indicador combina porcentaje, llenado y los textos «BATERÍA BAJA» y «BATERÍA AGOTADA», para comunicar los estados sin depender solo del rojo. Al intentar enlazar una fuente incompatible, desconecta la lectura previa y muestra el estado sin lectura; se puede volver a enlazar una fuente válida.
+
 ## Conectar al sistema de linterna del equipo
 
 Arrastra `PlayerHUD.prefab` a la escena real. Usa una de estas opciones:
@@ -31,7 +33,7 @@ La implementación no cambia los ajustes de Input System, las escenas de compila
 
 ## Revisión
 
-La verificación automatizada incluye porcentajes, límites, ausencia de fuente, conexión y visibilidad. Falta revisar con el equipo el tamaño final en el escenario real y conectar el componente definitivo de la linterna cuando se publique.
+La verificación automatizada incluye porcentajes, límites, ausencia de fuente, conexión, rechazo y reconexión de fuentes, estados textuales y visibilidad. La escena de revisión valida el componente de HUD con una batería de demostración; no demuestra integración con la linterna definitiva ni con el escenario final. Falta revisar con el equipo el tamaño final en el escenario real y conectar el componente definitivo de la linterna cuando se publique.
 
 Esta tarea solo pasa a In review después de aplicar el commit en la rama asignada y abrir el PR dirigido a AlssnQu.
 

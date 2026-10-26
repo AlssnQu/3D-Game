@@ -49,8 +49,9 @@ namespace LoQueCallaste.Hud.Editor
             Image("Terminal",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,24),new Vector2(12,5),White);
             var fill=Image("Carga",panel.transform,new Vector2(.5f,.5f),new Vector2(-111,-15),new Vector2(18,30),White);
             fill.rectTransform.pivot=new Vector2(.5f,0);fill.fillAmount=0;
-            var label=Label("Porcentaje",panel.transform,new Vector2(.5f,.5f),new Vector2(26,0),new Vector2(220,42),"BATERÍA  —",22);
-            root.GetComponent<FlashlightHud>().Configure(fill,label,group);
+            var label=Label("Porcentaje",panel.transform,new Vector2(.5f,.5f),new Vector2(26,10),new Vector2(220,42),"BATERÍA  —",22);
+            var status=Label("Estado de batería",panel.transform,new Vector2(.5f,.5f),new Vector2(26,-20),new Vector2(220,20),"",14);
+            root.GetComponent<FlashlightHud>().Configure(fill,label,group,status);
             PrefabUtility.SaveAsPrefabAsset(root,PrefabPath);Object.DestroyImmediate(root);AssetDatabase.SaveAssets();
         }
         [MenuItem("Marco/HUD/Crear escena de revisión")]

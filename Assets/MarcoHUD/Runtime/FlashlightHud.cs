@@ -7,6 +7,7 @@ namespace LoQueCallaste.Hud
     {
         [SerializeField] private Image chargeFill;
         [SerializeField] private Text percentageText;
+        [SerializeField] private Text statusText;
         [SerializeField] private CanvasGroup visibility;
         [Tooltip("Optional component implementing IBatteryReadout. Otherwise use SetCharge01 or SetChargePercent.")]
         [SerializeField] private MonoBehaviour batterySource;
@@ -18,10 +19,11 @@ namespace LoQueCallaste.Hud
         public bool HasReading => hasReading;
         public bool IsVisible => !visibility || visibility.alpha > 0;
         public string PercentageLabel => percentageText ? percentageText.text : "";
+        public string StatusLabel => statusText ? statusText.text : "";
 
-        public void Configure(Image fill, Text label, CanvasGroup group)
+        public void Configure(Image fill, Text label, CanvasGroup group, Text status = null)
         {
-            chargeFill = fill; percentageText = label; visibility = group;
+            chargeFill = fill; percentageText = label; visibility = group; statusText = status;
             Render();
         }
         private void Awake()
@@ -40,6 +42,7 @@ namespace LoQueCallaste.Hud
             if (!source) { UnbindBattery(); return false; }
             if (!(source is IBatteryReadout battery))
             {
+                UnbindBattery();
                 Debug.LogWarning("La fuente debe implementar IBatteryReadout; también puedes conectar SetCharge01 a un evento.", this);
                 return false;
             }
@@ -77,6 +80,11 @@ namespace LoQueCallaste.Hud
             {
                 percentageText.text = hasReading ? "BATERÍA  " + Mathf.RoundToInt(DisplayedCharge01 * 100) + "%" : "BATERÍA  —";
                 percentageText.color = hasReading && DisplayedCharge01 <= 0.2f ? lowColor : normalColor;
+            }
+            if (statusText)
+            {
+                statusText.text = !hasReading || DisplayedCharge01 > .2f ? "" : DisplayedCharge01 <= 0 ? "BATERÍA AGOTADA" : "BATERÍA BAJA";
+                statusText.color = lowColor;
             }
         }
     }
