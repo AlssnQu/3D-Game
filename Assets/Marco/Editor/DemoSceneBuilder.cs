@@ -55,6 +55,10 @@ namespace LoQueCallaste.Editor
             if (!listener) player.view.gameObject.AddComponent<AudioListener>();
             var ambience1 = Source("Ambiente del pasillo",new Vector3(0,2,15),"amb_corridor_procedural",.13f,true,8,28);
             var ambience2 = Source("Goteo y ambiente del baño",new Vector3(9,1.5f,14),"amb_bathroom_procedural",.12f,true,2,9);
+            TextureEmitter("Casillero · metal distante",new Vector3(-2.1f,1.4f,9),new[]{"kenney_impactMetal_light_000","kenney_impactMetal_light_001","kenney_impactMetal_light_002"},.38f,14,new Vector2(10,18));
+            TextureEmitter("Aula · madera bajo tensión",new Vector3(-7.5f,.9f,24),new[]{"laleksic_floor_creak1","laleksic_floor_creak2","laleksic_floor_creak3"},.34f,16,new Vector2(12,23));
+            TextureEmitter("Baño · bisagra de cabina",new Vector3(6.5f,1.2f,16.8f),new[]{"laleksic_door_creak_open","laleksic_door_creak_close"},.32f,12,new Vector2(14,25));
+            TextureEmitter("Baño · tubería",new Vector3(12.5f,1.1f,11.5f),new[]{"laleksic_tap_water"},.15f,10,new Vector2(9,16));
             Reverb("Reverb · Pasillo",new Vector3(0,1.6f,20),AudioReverbPreset.Hallway,3,7);
             Reverb("Reverb · Baño",new Vector3(10,1.6f,14),AudioReverbPreset.Bathroom,2,5.5f);
             SpatialAudioSetup.CreateAssets();
@@ -200,10 +204,25 @@ namespace LoQueCallaste.Editor
             var cameraObj=new GameObject("Main Camera");cameraObj.tag="MainCamera";cameraObj.transform.SetParent(obj.transform,false);cameraObj.transform.localPosition=new Vector3(0,1.6f,0);
             var camera=cameraObj.AddComponent<Camera>();camera.nearClipPlane=.06f;camera.farClipPlane=70;camera.fieldOfView=72;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=RenderSettings.fogColor;cameraObj.AddComponent<AudioListener>();controller.view=camera;
             var light=new GameObject("Linterna").AddComponent<Light>();light.transform.SetParent(cameraObj.transform,false);light.transform.localPosition=new Vector3(.18f,-.15f,.14f);light.type=LightType.Spot;light.spotAngle=61;light.innerSpotAngle=32;light.range=23;light.intensity=3.2f;light.color=new Color(1f,.89f,.69f);light.shadows=LightShadows.Soft;controller.flashlight=light;
-            var step=new GameObject("Pasos").AddComponent<AudioSource>();step.transform.SetParent(obj.transform,false);step.transform.localPosition=new Vector3(0,.2f,0);PositionalAudio.Configure(step,.5f,8);controller.footsteps=step;controller.stepClips=Enumerable.Range(0,4).Select(i=>Clip("step_"+i.ToString("00")+"_procedural")).ToArray();
+            var step=new GameObject("Pasos").AddComponent<AudioSource>();step.transform.SetParent(obj.transform,false);step.transform.localPosition=new Vector3(0,.2f,0);PositionalAudio.Configure(step,.5f,8);controller.footsteps=step;controller.stepClips=Enumerable.Range(0,4).Select(i=>CuratedClip("kenney_footstep_concrete_"+i.ToString("000"))).ToArray();
             return controller;
         }
         private static AudioClip Clip(string name) { return AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Marco/Audio/"+name+".wav"); }
+        public static AudioClip CuratedClip(string name)
+        {
+            var clip=AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Marco/Audio/Curated/"+name+".wav");
+            if(!clip)throw new Exception("Falta el sonido documentado: "+name);
+            return clip;
+        }
+        private static void TextureEmitter(string name,Vector3 position,string[] clips,float volume,float radius,Vector2 interval)
+        {
+            var source=Source(name,position,null,volume,false,1,radius);
+            source.priority=160;
+            var emitter=source.gameObject.AddComponent<SpatialSoundEmitter>();
+            emitter.clips=clips.Select(CuratedClip).ToArray();emitter.audibleRadius=radius;emitter.interval=interval;
+            var filter=source.gameObject.AddComponent<AudioLowPassFilter>();filter.cutoffFrequency=22000;
+            source.gameObject.AddComponent<SimpleAudioOcclusion>();
+        }
         private static AudioSource Source(string name,Vector3 pos,string clip,float volume,bool loop,float min,float max)
         {
             var obj=new GameObject(name);obj.transform.SetParent(world);obj.transform.position=pos;var source=obj.AddComponent<AudioSource>();PositionalAudio.Configure(source,min,max);source.volume=volume;source.loop=loop;source.clip=clip==null?null:Clip(clip);source.playOnAwake=loop;return source;

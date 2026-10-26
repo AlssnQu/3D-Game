@@ -48,7 +48,8 @@ namespace LoQueCallaste
                 stepClock -= Time.deltaTime;
                 if (stepClock <= 0 && footsteps && stepClips != null && stepClips.Length > 0)
                 {
-                    lastStep = (lastStep + 1) % stepClips.Length;
+                    lastStep = lastStep >= 0 && stepClips.Length > 1 ? (lastStep + Random.Range(1, stepClips.Length)) % stepClips.Length : Random.Range(0, stepClips.Length);
+                    footsteps.pitch = Random.Range(.97f, 1.03f);
                     if (stepClips[lastStep]) footsteps.PlayOneShot(stepClips[lastStep], 0.45f);
                     stepClock = 0.47f;
                 }

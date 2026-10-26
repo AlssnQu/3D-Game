@@ -16,8 +16,8 @@ namespace LoQueCallaste
         {
             if (!source) return;
             PositionalAudio.Configure(source, Mathf.Max(0.1f, minDistance), maxDistance, mixerGroup);
-            source.volume = volume;
-            source.reverbZoneMix = reverbMix;
+            source.volume = float.IsNaN(volume) || float.IsInfinity(volume) ? 0 : Mathf.Clamp01(volume);
+            source.reverbZoneMix = float.IsNaN(reverbMix) || float.IsInfinity(reverbMix) ? .8f : Mathf.Clamp(reverbMix, 0, 1.1f);
         }
     }
 }
