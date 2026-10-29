@@ -318,6 +318,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JugadorMovimiento
   velocidad: 5
+  sensibilidad: 0.1
+  camara: {fileID: 1782654072}
 --- !u!1 &838521659
 GameObject:
   m_ObjectHideFlags: 0

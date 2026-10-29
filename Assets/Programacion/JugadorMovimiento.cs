@@ -4,11 +4,18 @@ using UnityEngine.InputSystem;
 public class JugadorMovimiento : MonoBehaviour
 {
     public float velocidad = 5f;
+    public float sensibilidad = 0.1f;
+    public Transform camara;
+
     CharacterController controlador;
+    float rotacionVertical = 0f;
 
     void Start()
     {
         controlador = GetComponent<CharacterController>();
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -26,5 +33,18 @@ public class JugadorMovimiento : MonoBehaviour
 
         Vector3 direccion = (transform.right * h) + (transform.forward * v);
         controlador.SimpleMove(direccion * velocidad);
+
+        if (Mouse.current != null)
+        {
+            float mouseX = Mouse.current.delta.x.ReadValue() * sensibilidad;
+            float mouseY = Mouse.current.delta.y.ReadValue() * sensibilidad;
+
+            transform.Rotate(0, mouseX, 0);
+
+            rotacionVertical -= mouseY;
+            rotacionVertical = Mathf.Clamp(rotacionVertical, -80f, 80f);
+
+            camara.localRotation = Quaternion.Euler(rotacionVertical, 0, 0);
+        }
     }
 }
