@@ -39,4 +39,14 @@ public class Linterna : MonoBehaviour
             }
         }
     }
+
+    public void Recargar(float cantidad)
+    {
+        bateria += cantidad;
+
+        if (bateria > 100f)
+        {
+            bateria = 100f;
+        }
+    }
 }
