@@ -45,7 +45,22 @@ public class JugadorMovimiento : MonoBehaviour
             if (Keyboard.current.dKey.isPressed) h = 1f;
             if (Keyboard.current.aKey.isPressed) h = -1f;
 
+            // Agacharse (Ctrl izq)
+            if (Keyboard.current.leftCtrlKey.wasPressedThisFrame)
+            {
+                estaAgachado = !estaAgachado;
+                controlador.height = estaAgachado ? alturaAgachado : alturaNormal;
 
+                Vector3 posCamara = camara.localPosition;
+                posCamara.y = estaAgachado ? alturaCamaraAgachado : alturaCamaraNormal;
+                camara.localPosition = posCamara;
+            }
+
+            // Saltar (Espacio, solo en el suelo, no agachado)
+            if (Keyboard.current.spaceKey.wasPressedThisFrame && controlador.isGrounded && !estaAgachado)
+            {
+                velocidadVertical.y = Mathf.Sqrt(fuerzaSalto * -2f * gravedad);
+            }
         }
 
         // movimiento horizontal (cambiando de SimpleMove a Move para permitir salto)
