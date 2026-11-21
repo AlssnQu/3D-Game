@@ -59,7 +59,7 @@ namespace LoQueCallaste.Editor
             battery.hud = hud;
 
             var root = new GameObject("Audio y recuerdos · Marco").transform;
-            var stepSource = Source(player.transform, "Pasos", player.transform.position, .34f, 8);
+            var stepSource = Source(player.transform, "Pasos", player.transform.position, .55f, 8);
             var steps = stepSource.gameObject.AddComponent<SurfaceFootsteps>();
             steps.tileClips = Steps("concrete");
             steps.woodClips = Steps("wood");
@@ -81,8 +81,8 @@ namespace LoQueCallaste.Editor
                 Reverb(root, "Eco · " + section.name, centre, AudioReverbPreset.Hallway, 2, 4);
             }
             Reverb(root, "Eco del baño", bathPosition, AudioReverbPreset.Bathroom, 1.5f, 4);
-            var hallBed = Bed(root, "Aire del pasillo", hallPosition, "amb_corridor_procedural", .16f, 18);
-            var bathBed = Bed(root, "Goteo del baño", bathPosition, "amb_bathroom_procedural", .19f, 6);
+            var hallBed = Bed(root, "Aire del pasillo", hallPosition, "amb_corridor_procedural", .16f, 4, 18);
+            var bathBed = Bed(root, "Goteo del baño", bathPosition, "amb_bathroom_procedural", .19f, 1.5f, 6);
             var whisper = Source(root, "Murmullo distante", hallPosition + hall.forward * 4f, .20f, 10);
             var emitter = whisper.gameObject.AddComponent<SpatialSoundEmitter>();
             emitter.clips = new[] { Clip("sardin_whisper_texture_01"), Clip("sardin_whisper_texture_02") };
@@ -269,9 +269,10 @@ namespace LoQueCallaste.Editor
             return source;
         }
 
-        private static AudioSource Bed(Transform parent, string name, Vector3 position, string clip, float gain, float range)
+        private static AudioSource Bed(Transform parent, string name, Vector3 position, string clip, float gain, float fullVolumeRadius, float range)
         {
             var source = Source(parent, name, position, gain, range);
+            source.minDistance = fullVolumeRadius;
             source.clip = AssetDatabase.LoadAssetAtPath<AudioClip>($"Assets/Marco/Audio/{clip}.wav");
             if (!source.clip) throw new InvalidOperationException($"Falta {clip}.");
             source.loop = source.playOnAwake = true;

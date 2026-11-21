@@ -63,6 +63,8 @@ namespace LoQueCallaste.Editor
                         Require(Object.FindObjectsByType<JugadorMovimiento>(FindObjectsSortMode.None).Length == 1, "Un solo controlador del equipo");
                         Require(mix.channels.Length == Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None).Length, "Todas las fuentes están incluidas en la mezcla");
                         Require(mix.channels.Where(channel => channel.source.loop).All(channel => channel.source.isPlaying), "Ambientes activos");
+                        Require(mix.channels.Where(channel => channel.source.loop).All(channel => channel.source.minDistance >= 1.5f),
+                            "Ambientes con zona estable de volumen adaptada al espacio");
                         memory = sequence.GetComponent<MemoryAudioLink>();
                         battery = Object.FindFirstObjectByType<TeamBatteryReadout>();
                         Require(battery && battery.hud.HasReading, "HUD conectado a batería real");

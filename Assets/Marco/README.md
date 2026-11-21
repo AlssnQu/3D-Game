@@ -14,7 +14,7 @@ La secuencia de cinco segundos permite revisar transición y sonido. Quedan pend
 
 ### Reproducir la validación
 
-Con Unity cerrado, ejecutar `-batchmode -nographics -projectPath RUTA -executeMethod LoQueCallaste.Editor.SchoolPreviewCheck.Run`, sin `-quit`. Genera la escena desde Example, entra en Play y termina con código 0 si pasan las comprobaciones. El registro de esta revisión contiene 46 comprobaciones, incluidas 20 repeticiones con una paleta incompleta. El conjunto anterior de 69 comprobaciones de audio también pasó.
+Con Unity cerrado, ejecutar `-batchmode -nographics -projectPath RUTA -executeMethod LoQueCallaste.Editor.SchoolPreviewCheck.Run`, sin `-quit`. Genera la escena desde Example, entra en Play y termina con código 0 si pasan las comprobaciones. El registro de esta revisión contiene 71 comprobaciones, incluidas 20 repeticiones con una paleta incompleta. El conjunto anterior de 69 comprobaciones de audio también pasó.
 
 `Marco > Audio > Compilar prueba del colegio para Windows` genera `../output/integracion-marco/Colegio-Windows/Unspoken-Audio.exe`. La compilación y el arranque se verificaron en Windows con Unity 6000.3.23f1. Durante las ejecuciones del editor aparece una excepción de `UnityEditor.Search.SearchDatabase` al indexar el proyecto. Las comprobaciones de Play terminan correctamente.
 
@@ -66,4 +66,12 @@ En SchoolAudioPreview, M muestra el panel de escucha. Con el panel visible, 1 al
 
 `Prefabs/CreatureAudio.prefab` contiene dos emisores locales centrados y configurados como fuentes mono 3D. Para integrarlo, colocar el prefab como hijo del modelo de la criatura y llamar a `SpatialSoundEmitter.TryPlay()` sobre Respiración o Roce de tela desde el script de IA. `automatic` está desactivado. Se conserva el enfriamiento compartido de dos segundos, el radio audible y la supresión durante recuerdos. Al registrar estos emisores en otro escenario, añadirlos a `SchoolAudioDirector.textures` y sus fuentes a `channels`, con categoría Effects. La escena de revisión ya tiene esa conexión.
 
-La revisión actual aprobó 70 comprobaciones, incluidas las muestras después de importarlas en Unity y el prefab sin referencias a objetos de la escena. El tono telefónico queda disponible para la llamada narrativa. El guion, las voces autorizadas y los eventos de IA requieren la integración de sus responsables. El balance perceptivo se aprueba escuchando el juego en auriculares y altavoces.
+La revisión actual aprobó 71 comprobaciones, incluidas las muestras después de importarlas en Unity y el prefab sin referencias a objetos de la escena. El tono telefónico queda disponible para la llamada narrativa. El guion, las voces autorizadas y los eventos de IA requieren la integración de sus responsables. El balance perceptivo se aprueba escuchando el juego en auriculares y altavoces.
+
+## Muestra de la mezcla del motor
+
+`Review/Marco/SchoolAudioPreview.wav` permite escuchar la salida estéreo de Unity con posiciones de oyente guiadas. Se capturan pasos, ambiente, murmullo, sonidos de criatura, señal telefónica y la transición de revisión. El informe SchoolAudioPreview.json registra la versión del motor, duración, frecuencia de muestreo, pico y RMS.
+
+La grabación usa [AudioRenderer.Render](https://docs.unity.cn/6000.3/Documentation/ScriptReference/AudioRenderer.Render.html). Para regenerarla con Unity cerrado, ejecutar `-batchmode -nographics -projectPath RUTA -executeMethod LoQueCallaste.Editor.SchoolAudioCaptureBatch.Run`. El proceso termina al completar la muestra. La captura recorre posiciones de escucha preparadas para revisar la acústica del escenario. Los disparadores y los desplazamientos finales de IA y teléfono requieren sus componentes del equipo.
+
+La medición motivó un ajuste de cobertura ambiental. El pasillo mantiene su volumen estable hasta cuatro metros del emisor y el baño hasta 1,5 metros, con atenuación posterior. Los pasos se ajustaron a 0,55 de volumen de fuente. La prueba automática comprueba los nuevos radios y el render rechaza muestras vacías, valores no finitos, saturación y señales de revisión omitidas.
