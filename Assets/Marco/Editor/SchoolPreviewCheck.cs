@@ -126,8 +126,61 @@ namespace LoQueCallaste.Editor
                         memory.controlsToSuspend[0].enabled = controlStates[0];
                         deadline = EditorApplication.timeSinceStartup + 1.3;
                         break;
-                    default:
+                    case 7:
                         Require(!mix.CinematicFocus && mix.FocusBlend < .05f, "Interrumpir el recuerdo devuelve la mezcla");
+                        foreach (var texture in mix.textures) texture.SetSuppressed(true);
+                        var audition = Object.FindFirstObjectByType<SchoolAudioAudition>();
+                        Require(audition, "Modo de escucha presente en el colegio");
+                        foreach (var clip in audition.breath.clips.Concat(audition.cloth.clips).Concat(audition.phone.clips))
+                        {
+                            clip.LoadAudioData();
+                            var samples = new float[clip.samples * clip.channels];
+                            Require(clip.GetData(samples, 0), "Lectura de muestras originales " + clip.name);
+                            Require(samples.Max(value => Mathf.Abs(value)) < .27f,
+                                "Importación conserva margen de pico " + clip.name);
+                            Require(Mathf.Abs(samples[0]) < .001f && Mathf.Abs(samples[samples.Length - 1]) < .001f,
+                                "Entrada y salida sin discontinuidad " + clip.name);
+                        }
+                        audition.breath.SetSuppressed(false);
+                        deadline = EditorApplication.timeSinceStartup + 2.3;
+                        break;
+                    case 8:
+                        var breathReview = Object.FindFirstObjectByType<SchoolAudioAudition>();
+                        Require(breathReview.AuditionBreath(), "Respiración original reproducible en 3D");
+                        var breathSource = breathReview.breath.GetComponent<AudioSource>();
+                        Require(breathSource.isPlaying && breathSource.spatialBlend == 1, "Respiración usa posición espacial");
+                        Require(breathSource.clip.channels == 1 && breathSource.clip.frequency == 48000,
+                            "Respiración mono a 48 kHz");
+                        mix.SetEffects(0);
+                        Require(breathSource.volume == 0, "Aislamiento de efectos silencia criatura");
+                        breathReview.RestoreMix();
+                        Require(breathSource.volume > 0, "Restaurar mezcla recupera criatura");
+                        mix.BeginCinematic();
+                        Require(!breathReview.AuditionCloth() && !breathSource.isPlaying,
+                            "Recuerdo impide audiciones y detiene respiración");
+                        mix.EndCinematic();
+                        breathReview.cloth.SetSuppressed(false);
+                        deadline = EditorApplication.timeSinceStartup + 2.3;
+                        break;
+                    case 9:
+                        var clothReview = Object.FindFirstObjectByType<SchoolAudioAudition>();
+                        Require(clothReview.AuditionCloth(), "Roce de tela original reproducible");
+                        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Marco/Prefabs/CreatureAudio.prefab");
+                        var emitters = prefab.GetComponentsInChildren<SpatialSoundEmitter>();
+                        Require(emitters.Length == 2 && emitters.All(item => !item.automatic && !item.listener),
+                            "Prefab de criatura preparado para eventos y sin vínculos a la escena");
+                        Require(emitters.All(item => item.transform.localPosition == Vector3.zero),
+                            "Emisores centrados para seguir el modelo de criatura");
+                        clothReview.phone.SetSuppressed(false);
+                        deadline = EditorApplication.timeSinceStartup + 2.6;
+                        break;
+                    default:
+                        var phoneReview = Object.FindFirstObjectByType<SchoolAudioAudition>();
+                        Require(phoneReview.AuditionPhone(), "Señal original de llamada reproducible");
+                        Require(phoneReview.phone.GetComponent<AudioSource>().spatialBlend == 0,
+                            "Señal telefónica subjetiva en 2D");
+                        phoneReview.RestoreMix();
+                        foreach (var texture in mix.textures) texture.SetSuppressed(false);
                         Finish(0);
                         break;
                 }

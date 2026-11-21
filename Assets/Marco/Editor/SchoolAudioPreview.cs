@@ -115,6 +115,26 @@ namespace LoQueCallaste.Editor
             mix.transitionSource = transition;
             mix.memoryIn = Clip("design_memory_in");
             mix.memoryOut = Clip("design_memory_out");
+            var creatureRoot = new GameObject("Criatura · emisores para IA").transform;
+            creatureRoot.SetParent(root);
+            var breath = OriginalEmitter(creatureRoot, "Respiración", Vector3.zero,
+                new[] { "creature_breath_01", "creature_breath_02" }, .55f, 12, playerListener.transform);
+            var cloth = OriginalEmitter(creatureRoot, "Roce de tela", Vector3.zero,
+                new[] { "creature_cloth_drag" }, .60f, 9, playerListener.transform);
+            var phone = OriginalEmitter(player.transform, "Línea sin respuesta", playerCamera.transform.position,
+                new[] { "phone_unanswered" }, .35f, 5, playerListener.transform);
+            phone.GetComponent<AudioSource>().spatialBlend = 0;
+            phone.GetComponent<AudioSource>().reverbZoneMix = 0;
+            textures.AddRange(new[] { breath, cloth, phone });
+            channels.Add(Channel(breath.GetComponent<AudioSource>(), SchoolAudioDirector.Bus.Effects));
+            channels.Add(Channel(cloth.GetComponent<AudioSource>(), SchoolAudioDirector.Bus.Effects));
+            channels.Add(Channel(phone.GetComponent<AudioSource>(), SchoolAudioDirector.Bus.Dialogue));
+            breath.listener = null;
+            cloth.listener = null;
+            PrefabUtility.SaveAsPrefabAsset(creatureRoot.gameObject, "Assets/Marco/Prefabs/CreatureAudio.prefab");
+            breath.listener = playerListener.transform;
+            cloth.listener = playerListener.transform;
+            creatureRoot.position = playerCamera.transform.position;
             mix.textures = textures.ToArray();
             mix.channels = new[] { Channel(hallBed, SchoolAudioDirector.Bus.Ambience),
                 Channel(bathBed, SchoolAudioDirector.Bus.Ambience), Channel(whisper, SchoolAudioDirector.Bus.Ambience),
@@ -169,6 +189,13 @@ namespace LoQueCallaste.Editor
             black.GetComponent<Image>().color = Color.black;
             black.GetComponent<Image>().raycastTarget = false;
             memory.fade = group;
+            var audition = root.gameObject.AddComponent<SchoolAudioAudition>();
+            audition.mix = mix;
+            audition.memory = memory;
+            audition.listener = playerListener.transform;
+            audition.breath = breath;
+            audition.cloth = cloth;
+            audition.phone = phone;
 
             if (Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Count(item => item.enabled) != 1)
                 throw new InvalidOperationException("La prueba requiere un solo oyente activo.");
@@ -208,6 +235,22 @@ namespace LoQueCallaste.Editor
             source.gameObject.AddComponent<AudioLowPassFilter>().cutoffFrequency = 22000;
             source.gameObject.AddComponent<SimpleAudioOcclusion>().listener = listener;
             return texture;
+        }
+
+        private static SpatialSoundEmitter OriginalEmitter(Transform parent, string name, Vector3 position,
+            string[] clips, float gain, float range, Transform listener)
+        {
+            var source = Source(parent, name, position, gain, range);
+            source.minDistance = 1.5f;
+            var emitter = source.gameObject.AddComponent<SpatialSoundEmitter>();
+            emitter.clips = clips.Select(clip => AssetDatabase.LoadAssetAtPath<AudioClip>(
+                "Assets/Marco/Audio/Original/" + clip + ".wav")).ToArray();
+            if (emitter.clips.Any(clip => !clip)) throw new InvalidOperationException("Falta la paleta original de " + name);
+            emitter.automatic = false;
+            emitter.pitchRange = Vector2.one;
+            emitter.audibleRadius = range;
+            emitter.listener = listener;
+            return emitter;
         }
 
         private static AudioClip Clip(string name) => DemoSceneBuilder.CuratedClip(name);

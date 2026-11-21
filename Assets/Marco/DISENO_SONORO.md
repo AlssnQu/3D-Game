@@ -1,4 +1,4 @@
-# LO QUE CALLASTE — Diseño sonoro de Marco
+﻿# LO QUE CALLASTE — Diseño sonoro de Marco
 
 ## Intención
 
@@ -71,3 +71,12 @@ Para usar el director, conectar inicio a BeginCinematic y fin/cancelación a End
 ## Herramientas
 
 La entrega usa audio nativo de Unity, AudioReverbZone, AudioLowPassFilter y el Timeline que el proyecto ya incluye. No necesita instalar un middleware para funcionar. Si se edita la paleta en una herramienta externa, conservar los originales y registrar los cambios en SOURCES.json. No aplicar reverberación permanente a los efectos secos que ya reciben reverberación en el motor.
+
+
+## Recursos originales para criatura y llamada
+
+La respiración combina ruido filtrado, una envolvente de aire y una modulación grave leve. Las dos variantes permiten alternar tomas. El roce de tela usa pulsos irregulares para acompañar un desplazamiento de la criatura. La señal telefónica incorpora pulsos tonales con ataques y salidas suaves. Los cuatro recursos se generan mediante Tools/Audio/generate_original_palette.py y sus medidas están en Audio/Original/SOURCES.json.
+
+El prefab CreatureAudio separa respiración y roce para que la programadora pueda dispararlos según el estado del personaje. El radio se mantiene localizado y las fuentes respetan la categoría de efectos y la reducción de impactos. En el recuerdo se detienen junto con las texturas del entorno. La señal telefónica se trata como sonido subjetivo y entra en la categoría de recuerdos.
+
+Para la revisión por escucha, comparar primero el ambiente al recorrer pasillo y baño, después añadir efectos y por último probar R. Usar M para aislar categorías y comprobar que la respiración sea reconocible sin tapar pasos o diálogo. B y V permiten comparar la posición de prueba antes de conectar el modelo. Registrar el balance aprobado con el equipo antes de considerarlo mezcla final.

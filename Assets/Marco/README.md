@@ -57,3 +57,13 @@ Consultar DISENO_SONORO.md para la intención narrativa, paleta por espacio, pru
 SchoolAudioDirector ofrece volumen general/ambiente/efectos/voces, impactos suaves y mezcla de recuerdo mediante BeginCinematic/EndCinematic. SurfaceFootsteps expone pasos por superficie y FlashlightSwitchAudio confirma cambios de linterna sin sustituir su lógica. Los puntos de enlace y los límites de la mezcla están en DISENO_SONORO.md.
 
 La selección de texturas compara la grabación anterior por referencia: evita repetirla aunque aparezca duplicada en la paleta y omite entradas sin asignar. Si solo queda una grabación válida, permite reutilizarla como alternativa controlada.
+
+## Paleta original y modo de escucha
+
+`Audio/Original` contiene dos respiraciones, un roce de tela y una señal de llamada sin respuesta, sintetizados para Unspoken. Los WAV son mono PCM de 16 bits a 48 kHz. SOURCES.json conserva duración, picos, RMS y hashes. Se reproducen con `python Tools/Audio/generate_original_palette.py`, usando la biblioteca estándar de Python. Los importadores conservan sus picos originales entre -12 y -16 dBFS.
+
+En SchoolAudioPreview, M muestra el panel de escucha. Con el panel visible, 1 alterna ambiente, 2 efectos, 3 recuerdos, 4 impactos suaves, 5 restaura la mezcla inicial y - / = ajustan el volumen general. B prueba respiración, V tela y N la señal telefónica. Las pruebas de criatura colocan la fuente a tres metros a la derecha y un metro por delante del oyente. El jugador sigue recorriendo el colegio mientras compara la mezcla. Durante un recuerdo se oculta el panel y se suspenden las audiciones.
+
+`Prefabs/CreatureAudio.prefab` contiene dos emisores locales centrados y configurados como fuentes mono 3D. Para integrarlo, colocar el prefab como hijo del modelo de la criatura y llamar a `SpatialSoundEmitter.TryPlay()` sobre Respiración o Roce de tela desde el script de IA. `automatic` está desactivado. Se conserva el enfriamiento compartido de dos segundos, el radio audible y la supresión durante recuerdos. Al registrar estos emisores en otro escenario, añadirlos a `SchoolAudioDirector.textures` y sus fuentes a `channels`, con categoría Effects. La escena de revisión ya tiene esa conexión.
+
+La revisión actual aprobó 70 comprobaciones, incluidas las muestras después de importarlas en Unity y el prefab sin referencias a objetos de la escena. El tono telefónico queda disponible para la llamada narrativa. El guion, las voces autorizadas y los eventos de IA requieren la integración de sus responsables. El balance perceptivo se aprueba escuchando el juego en auriculares y altavoces.
