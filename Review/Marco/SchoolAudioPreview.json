@@ -1,0 +1,9 @@
+{
+    "unity": "6000.3.23f1",
+    "origin": "Unity AudioRenderer. Guided listener positions in SchoolAudioPreview.",
+    "sampleRate": 48000,
+    "cues": 5,
+    "seconds": 36.032,
+    "peakDbfs": -20.133648950412988,
+    "rmsDbfs": -39.110764826624968
+}

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LoQueCallaste
 {
@@ -31,14 +31,23 @@ namespace LoQueCallaste
             var clips=surface==SchoolSurface.Wood?woodClips:tileClips;
             if(clips==null || clips.Length==0)clips=tileClips;
             if(clips==null || clips.Length==0)return false;
-            int start=Random.Range(0,clips.Length),index=start;
-            for(int i=0;i<clips.Length;i++)
+            int alternatives = 0;
+            foreach (var clip in clips)
+                if (clip && clip != previous) alternatives++;
+            bool repeat = alternatives == 0;
+            if (repeat)
+                foreach (var clip in clips)
+                    if (clip) alternatives++;
+            if (alternatives == 0) return false;
+            int choice = Random.Range(0, alternatives);
+            foreach (var clip in clips)
             {
-                index=(start+i)%clips.Length;
-                if(clips[index] && clips[index]!=previous)break;
+                if (!clip || (!repeat && clip == previous)) continue;
+                if (choice-- != 0) continue;
+                previous = clip;
+                break;
             }
-            if(!clips[index])return false;
-            previous=clips[index];LastSurface=surface;
+            LastSurface = surface;
             source.pitch=Random.Range(.97f,1.03f);source.clip=previous;source.loop=false;source.Play();
             return true;
         }

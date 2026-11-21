@@ -1,0 +1,37 @@
+{
+  "origin": "Original procedural synthesis for Unspoken. No external recordings.",
+  "generator": "Tools/Audio/generate_original_palette.py",
+  "sample_rate": 48000,
+  "channels": 1,
+  "sample_bits": 16,
+  "clips": [
+    {
+      "file": "creature_breath_01.wav",
+      "seconds": 3.4,
+      "peak_dbfs": -12.0,
+      "rms_dbfs": -28.31,
+      "sha256": "0f6b0ba21bdbee5d281e696f4e8b93109b1da8f00b25f2a84b3283b4928d78e8"
+    },
+    {
+      "file": "creature_breath_02.wav",
+      "seconds": 4.2,
+      "peak_dbfs": -12.0,
+      "rms_dbfs": -30.47,
+      "sha256": "13f49f4eea5022aded5d486925ad2131b46be0ffc8bc08b8315d8ced1f0cd5e6"
+    },
+    {
+      "file": "creature_cloth_drag.wav",
+      "seconds": 2.3,
+      "peak_dbfs": -14.0,
+      "rms_dbfs": -35.22,
+      "sha256": "3d8991de879a3d0c76c242973bfeba4d1a5df41f5d4e4972601f5af5f94312f5"
+    },
+    {
+      "file": "phone_unanswered.wav",
+      "seconds": 2.6,
+      "peak_dbfs": -16.0,
+      "rms_dbfs": -23.06,
+      "sha256": "a4f7fcbe7ec4e2730e6ebbfb53420eb5eb82fd7f1d64a0aa652a20a28f71a237"
+    }
+  ]
+}
