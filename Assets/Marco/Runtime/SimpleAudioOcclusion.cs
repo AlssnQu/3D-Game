@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LoQueCallaste
 {
@@ -35,8 +35,12 @@ namespace LoQueCallaste
             IsOccluded = false;
             if (!listener)
             {
-                var found = FindFirstObjectByType<AudioListener>();
-                if (found && found.isActiveAndEnabled) listener = found.transform;
+                foreach (var found in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+                {
+                    if (!found.isActiveAndEnabled) continue;
+                    listener = found.transform;
+                    break;
+                }
             }
             if (!listener) return;
             Vector3 path = listener.position - transform.position;

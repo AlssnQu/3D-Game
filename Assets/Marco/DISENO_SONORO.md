@@ -1,4 +1,4 @@
-# LO QUE CALLASTE — Diseño sonoro de Marco
+﻿# LO QUE CALLASTE — Diseño sonoro de Marco
 
 ## Intención
 
@@ -71,3 +71,30 @@ Para usar el director, conectar inicio a BeginCinematic y fin/cancelación a End
 ## Herramientas
 
 La entrega usa audio nativo de Unity, AudioReverbZone, AudioLowPassFilter y el Timeline que el proyecto ya incluye. No necesita instalar un middleware para funcionar. Si se edita la paleta en una herramienta externa, conservar los originales y registrar los cambios en SOURCES.json. No aplicar reverberación permanente a los efectos secos que ya reciben reverberación en el motor.
+
+
+## Recursos originales para criatura y llamada
+
+La respiración combina ruido filtrado, una envolvente de aire y una modulación grave leve. Las dos variantes permiten alternar tomas. El roce de tela usa pulsos irregulares para acompañar un desplazamiento de la criatura. La señal telefónica incorpora pulsos tonales con ataques y salidas suaves. Los cuatro recursos se generan mediante Tools/Audio/generate_original_palette.py y sus medidas están en Audio/Original/SOURCES.json.
+
+El prefab CreatureAudio separa respiración y roce para que la programadora pueda dispararlos según el estado del personaje. El radio se mantiene localizado y las fuentes respetan la categoría de efectos y la reducción de impactos. En el recuerdo se detienen junto con las texturas del entorno. La señal telefónica se trata como sonido subjetivo y entra en la categoría de recuerdos.
+
+Para la revisión por escucha, comparar primero el ambiente al recorrer pasillo y baño, después añadir efectos y por último probar R. Usar M para aislar categorías y comprobar que la respiración sea reconocible sin tapar pasos o diálogo. B y V permiten comparar la posición de prueba antes de conectar el modelo. Registrar el balance aprobado con el equipo antes de considerarlo mezcla final.
+
+
+## Recorrido de revisión renderizado en Unity
+
+El archivo Review/Marco/SchoolAudioPreview.wav presenta esta secuencia de escucha.
+
+| Tiempo aproximado | Contenido |
+| --- | --- |
+| 0 a 8 s | Ambiente del pasillo y pasos |
+| 8 a 11 s | Murmullo localizado |
+| 11 a 15 s | Respiración de criatura a la derecha |
+| 15 a 17 s | Roce de tela |
+| 17 a 22 s | Desplazamiento del oyente hacia el baño |
+| 22 a 26 s | Señal telefónica subjetiva |
+| 26 a 31 s | Transición al recuerdo y mezcla reducida |
+| 31 a 36 s | Recuperación del ambiente |
+
+Se conserva el nivel de salida del motor en la grabación. El informe JSON ofrece pico y RMS para comparar futuras revisiones. La evaluación auditiva del equipo determina el balance final en auriculares, altavoces y reproducción mono.
