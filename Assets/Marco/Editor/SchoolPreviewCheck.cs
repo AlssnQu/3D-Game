@@ -104,16 +104,25 @@ namespace LoQueCallaste.Editor
                         break;
                     case 4:
                         Require(memory.fade.alpha == 0 && battery.hud.IsVisible, "Interrupción restaura imagen y HUD");
-                        // An already disabled control must stay disabled after a cinematic interruption.
                         memory.controlsToSuspend[0].enabled = false;
                         sequence.time = 0;
                         sequence.Play();
                         deadline = EditorApplication.timeSinceStartup + .6;
                         break;
                     case 5:
+                        sequence.Stop();
+                        sequence.time = 0;
+                        sequence.Play();
+                        Require(memory.IsPresenting && mix.CinematicFocus, "Reinicio durante el fundido conserva la presentación");
+                        deadline = EditorApplication.timeSinceStartup + .6;
+                        break;
+                    case 6:
+                        Require(!battery.hud.IsVisible && memory.controlsToSuspend.All(control => !control || !control.enabled),
+                            "Reinicio mantiene HUD oculto y controles bloqueados");
                         memory.enabled = false;
                         Require(!memory.IsPresenting && memory.fade.alpha == 0, "Desactivar el enlace limpia la presentación");
                         Require(!memory.controlsToSuspend[0].enabled, "Control previamente desactivado conserva su estado");
+                        Require(battery.hud.IsVisible, "Desactivar tras reinicio devuelve el HUD original");
                         memory.controlsToSuspend[0].enabled = controlStates[0];
                         deadline = EditorApplication.timeSinceStartup + 1.3;
                         break;

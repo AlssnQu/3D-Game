@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using LoQueCallaste.Hud;
@@ -58,7 +58,15 @@ namespace LoQueCallaste
 
         private void Begin(PlayableDirector director)
         {
-            if (IsPresenting) return;
+            if (active) return;
+            // A new playback can arrive while the previous fade is still returning.
+            // Keep the original control snapshot until the last presentation finishes.
+            if (previousControls != null)
+            {
+                active = true;
+                if (mix) mix.BeginCinematic();
+                return;
+            }
             active = true;
             previousControls = new bool[controlsToSuspend.Length];
             for (int i = 0; i < controlsToSuspend.Length; i++)

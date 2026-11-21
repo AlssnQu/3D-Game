@@ -1,4 +1,4 @@
-# HUD del jugador — Tarea #11
+﻿# HUD del jugador — Tarea #11
 
 Compatible con Unity 6000.3.23f1, URP y el Input System existentes en el repositorio.
 
@@ -38,3 +38,9 @@ La verificación automatizada incluye porcentajes, límites, ausencia de fuente,
 Esta tarea solo pasa a In review después de aplicar el commit en la rama asignada y abrir el PR dirigido a AlssnQu.
 
 Con Unity cerrado, se puede repetir la prueba con `-batchmode -nographics -projectPath RUTA -executeMethod LoQueCallaste.Hud.Editor.HudReviewBatch.Run`, sin `-quit`: el comprobador entra en Play y cierra al terminar. Guarda `../output/integracion-marco/verification/hud-runtime.json` con los resultados, incluyendo altura visible, color, lectura del proveedor, desconexión y ocultación. `HudSetup.Verify` realiza la comprobación del editor y admite `-quit`; `HudSetup.Deliver` genera capturas, paquete y demo Windows con gráficos disponibles.
+
+## Integración con la linterna actual
+
+`Runtime/TeamBatteryReadout.cs` implementa IBatteryReadout usando el campo `bateria` de `Linterna`. Asignar la linterna y el HUD en el Inspector. El adaptador refleja consumo y recarga y desvincula el HUD cuando se desactiva o pierde la linterna.
+
+La escena `Assets/Marco/Scenes/SchoolAudioPreview.unity` conecta el HUD con la linterna de Example. La transición de revisión oculta el HUD y restaura su visibilidad anterior al salir. Se verificaron batería baja, recarga y recuperación del HUD después de interrupciones. El tamaño y el contraste finales requieren revisión visual del equipo en el escenario.

@@ -1,8 +1,26 @@
-# Audio espacial — Marco · Tarea #17
+﻿# Audio espacial — Marco · Tarea #17
 
 Base: Unity 6000.3.23f1, URP 17.3 e Input System 1.20 del equipo. La escena original `Assets/Scenes/SampleScene.unity` y la configuración del proyecto se conservan.
 
-**Estado: prototipo validado en laboratorio; integración al colegio pendiente.** Los espacios de prueba no son las zonas definitivas del colegio. Las pruebas verifican componentes y comportamiento técnico, no la mezcla ni la arquitectura del mapa final.
+## Integración sobre el colegio actualizado
+
+Base verificada en main 26e6c06, con el movimiento, linterna y raycast del equipo. Abrir `Assets/Marco/Scenes/SchoolAudioPreview.unity` y pulsar Play. WASD mueve, el ratón mira, Ctrl agacha, Espacio salta, F acciona la linterna y R reproduce o interrumpe el recuerdo de revisión.
+
+La escena parte de `Assets/Scenes/Example.unity` e incluye su jugador. Los ecos cubren seis secciones del pasillo y el baño. Casilleros, puertas y murmullos tienen emisores localizados con pausas variables y filtrado por pared. Los pasos distinguen madera y baldosa, y los clics siguen el estado de la linterna. La batería del equipo alimenta el HUD mediante `TeamBatteryReadout`.
+
+`MemoryAudioLink` conecta PlayableDirector con la mezcla, el fundido y la visibilidad del HUD. Conserva el estado de cada control y lo restaura al terminar, cancelar o desactivar el enlace. Si Timeline se reinicia durante el fundido de salida, mantiene el bloqueo y la captura original de estados hasta salir de la nueva reproducción.
+
+La secuencia de cinco segundos permite revisar transición y sonido. Quedan pendientes las voces autorizadas, el teléfono, el disparador narrativo y la aprobación de la mezcla mediante escucha. La reverberación usa zonas esféricas y el filtrado aproxima la línea de visión.
+
+### Reproducir la validación
+
+Con Unity cerrado, ejecutar `-batchmode -nographics -projectPath RUTA -executeMethod LoQueCallaste.Editor.SchoolPreviewCheck.Run`, sin `-quit`. Genera la escena desde Example, entra en Play y termina con código 0 si pasan las comprobaciones. El registro de esta revisión contiene 46 comprobaciones, incluidas 20 repeticiones con una paleta incompleta. El conjunto anterior de 69 comprobaciones de audio también pasó.
+
+`Marco > Audio > Compilar prueba del colegio para Windows` genera `../output/integracion-marco/Colegio-Windows/Unspoken-Audio.exe`. La compilación y el arranque se verificaron en Windows con Unity 6000.3.23f1. Durante las ejecuciones del editor aparece una excepción de `UnityEditor.Search.SearchDatabase` al indexar el proyecto. Las comprobaciones de Play terminan correctamente.
+
+## Laboratorio de componentes
+
+`AudioCinematicsLab.unity` conserva la geometría provisional para comprobar los componentes de forma aislada.
 
 ## Tarea #17: audio espacial y reverberación
 
@@ -18,7 +36,7 @@ Para generar el laboratorio: menú Marco → Crear escena de audio y cinemática
 
 Controles: WASD, ratón, F linterna, Esc liberar cursor y clic para volver; M abre ajustes de sonido. Los ambientes propios se combinan con pasos de baldosa y madera, metal, crujidos, bisagras, agua, clics y texturas de susurro de una paleta documentada de 24 archivos en Audio/Curated/CREDITS.md. La mezcla requiere revisión auditiva en el mapa final.
 
-No se incluyen assets del colegio ni el modelo The Wrapped. La geometría es un laboratorio funcional para revisar la tarea antes de contar con el mapa.
+La geometría de AudioCinematicsLab es provisional. SchoolAudioPreview utiliza los recursos del colegio incluidos por el equipo.
 
 ## Flujo de entrega
 
