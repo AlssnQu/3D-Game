@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LoQueCallaste
 {
@@ -14,6 +14,16 @@ namespace LoQueCallaste
         private bool sampled;
 
         private void OnEnable() { sampled = false; }
+
+        private void OnDisable()
+        {
+            sampled = false;
+            if (footsteps)
+            {
+                footsteps.Advance(0, false, SchoolSurface.Tile);
+                footsteps.GetComponent<AudioSource>().Stop();
+            }
+        }
 
         private void LateUpdate()
         {

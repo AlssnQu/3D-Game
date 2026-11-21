@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
+using UnityEngine.UI;
+using LoQueCallaste.Hud;
 using Object = UnityEngine.Object;
 
 namespace LoQueCallaste.Editor
@@ -47,6 +50,13 @@ namespace LoQueCallaste.Editor
 
             var controller = player.GetComponent<CharacterController>();
             var flashlight = player.GetComponentInChildren<Linterna>().GetComponent<Light>();
+
+            var hudObject = (GameObject)PrefabUtility.InstantiatePrefab(
+                AssetDatabase.LoadAssetAtPath<GameObject>(LoQueCallaste.Hud.Editor.HudSetup.PrefabPath));
+            var hud = hudObject.GetComponent<FlashlightHud>();
+            var battery = hudObject.AddComponent<TeamBatteryReadout>();
+            battery.flashlight = flashlight.GetComponent<Linterna>();
+            battery.hud = hud;
 
             var root = new GameObject("Audio y recuerdos · Marco").transform;
             var stepSource = Source(player.transform, "Pasos", player.transform.position, .34f, 8);
@@ -138,6 +148,27 @@ namespace LoQueCallaste.Editor
             var memory = root.gameObject.AddComponent<MemoryAudioLink>();
             memory.mix = mix;
             memory.enablePreviewKey = true;
+            memory.hud = hud;
+            memory.controlsToSuspend = new Behaviour[] { player.GetComponent<JugadorMovimiento>(),
+                player.GetComponentInChildren<Interaccion>(), flashlight.GetComponent<Linterna>(), link };
+            var overlay = new GameObject("Fundido del recuerdo", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup));
+            overlay.transform.SetParent(root);
+            var canvas = overlay.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 100;
+            var group = overlay.GetComponent<CanvasGroup>();
+            group.alpha = 0;
+            group.interactable = false;
+            group.blocksRaycasts = false;
+            var black = new GameObject("Negro", typeof(RectTransform), typeof(Image));
+            black.transform.SetParent(overlay.transform, false);
+            var rect = black.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            black.GetComponent<Image>().color = Color.black;
+            black.GetComponent<Image>().raycastTarget = false;
+            memory.fade = group;
 
             if (Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Count(item => item.enabled) != 1)
                 throw new InvalidOperationException("La prueba requiere un solo oyente activo.");
@@ -145,6 +176,24 @@ namespace LoQueCallaste.Editor
                 throw new InvalidOperationException("No se guardó la escena de revisión.");
             Debug.Log($"MARCO_SCHOOL_OK: piso {floorHit.collider.name}, pasillo {hallPosition}, baño {bathPosition}");
             EditorSceneManager.OpenScene(PreviewPath);
+        }
+
+        [MenuItem("Marco/Audio/Compilar prueba del colegio para Windows")]
+        public static void BuildWindows()
+        {
+            EditorSceneManager.OpenScene(PreviewPath);
+            string output = Path.GetFullPath("../output/integracion-marco/Colegio-Windows/Unspoken-Audio.exe");
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            var result = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = new[] { PreviewPath },
+                locationPathName = output,
+                target = BuildTarget.StandaloneWindows64,
+                options = BuildOptions.Development
+            });
+            if (result.summary.result != UnityEditor.Build.Reporting.BuildResult.Succeeded)
+                throw new InvalidOperationException("Falló la compilación del colegio: " + result.summary.result);
+            Debug.Log("MARCO_SCHOOL_BUILD_OK: " + output);
         }
 
         private static SpatialSoundEmitter Texture(Transform parent, string name, Vector3 position,

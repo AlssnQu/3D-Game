@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LoQueCallaste
 {
@@ -27,8 +27,12 @@ namespace LoQueCallaste
         private void ResolveListener()
         {
             if (listener) return;
-            var found = FindFirstObjectByType<AudioListener>();
-            if (found && found.isActiveAndEnabled) listener = found.transform;
+            foreach (var found in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+            {
+                if (!found.isActiveAndEnabled) continue;
+                listener = found.transform;
+                break;
+            }
         }
         private void Update()
         {
