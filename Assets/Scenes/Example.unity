@@ -10714,7 +10714,7 @@ Light:
   serializedVersion: 12
   m_Type: 1
   m_Color: {r: 0.95660377, g: 1, b: 0.9570466, a: 1}
-  m_Intensity: 2
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -10777,7 +10777,7 @@ Transform:
   m_GameObject: {fileID: 680615602}
   serializedVersion: 2
   m_LocalRotation: {x: 0.33159345, y: -0.33423126, z: 0.33713952, w: 0.8152743}
-  m_LocalPosition: {x: 26.48, y: 15, z: -1.34}
+  m_LocalPosition: {x: 14.46, y: 34.49, z: -1.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12267,7 +12267,7 @@ Terrain:
   serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 77e4780736c22ca4f8c3fb89bbfa0afb, type: 2}
   m_TreeDistance: 5000
-  m_TreeBillboardDistance: 50
+  m_TreeBillboardDistance: 2000
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
   m_DetailObjectDistance: 80
