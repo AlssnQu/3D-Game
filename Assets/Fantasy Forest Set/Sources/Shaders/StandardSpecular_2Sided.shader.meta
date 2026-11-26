@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: b322d67e2e0559a43bfcf2c2efe0d52a
+timeCreated: 1471270347
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 70568
+  packageName: Fantasy Forest Set
+  packageVersion: 1.0
+  assetPath: Assets/Fantasy Forest Set/Sources/Shaders/StandardSpecular_2Sided.shader
+  uploadId: 134737
