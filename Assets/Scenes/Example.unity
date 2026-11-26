@@ -10713,8 +10713,8 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 0.16740835, g: 0.1999458, b: 0.20754719, a: 1}
-  m_Intensity: 35
+  m_Color: {r: 0.95660377, g: 1, b: 0.9570466, a: 1}
+  m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -10776,13 +10776,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680615602}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.15275295, y: -0.78036296, z: 0.23439805, w: 0.55924743}
-  m_LocalPosition: {x: 22.36, y: 3.35, z: -2.54}
+  m_LocalRotation: {x: 0.33159345, y: -0.33423126, z: 0.33713952, w: 0.8152743}
+  m_LocalPosition: {x: 26.48, y: 15, z: -1.34}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 11.243, y: -105.651, z: 30.689}
+  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 30.689}
 --- !u!114 &680615605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12283,7 +12283,7 @@ Terrain:
   m_StaticShadowCaster: 0
   m_IgnoreQualitySettings: 0
   m_ReflectionProbeUsage: 1
-  m_MaterialTemplate: {fileID: -5874956291880872276, guid: b95f8b5db5bc8864f9b91cd764d7fb92, type: 3}
+  m_MaterialTemplate: {fileID: 2100000, guid: 728e6d86130d43b439ed9ae9275caa9b, type: 2}
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
